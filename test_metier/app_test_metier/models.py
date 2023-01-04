@@ -36,6 +36,9 @@ class GraphsData(models.Model):
 
     def get_power_and_data(self,cat):
         return [datetime.timestamp(self.dt), json.loads(self.json_data)[cat]]
+    @property
+    def data(self):
+        return json.loads(self.json_data)
     class Meta:
         managed = False
         db_table = 'graphs_data'

@@ -1,5 +1,5 @@
 import logging
-
+import json
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -13,12 +13,14 @@ def home(request):
 
     categories = GraphsCategory.objects.all()
     data = GraphsData.objects.all()
-    context = {'categories': categories,'data': data}
     logging.warning(f"cfdfdfdf {request.POST.get('cat', '')}")
     cat = request.POST.get("cat", "")
     d = {}
     l = []
     l=get_categ_by_date_and_power(l)
+    l.insert(0,['name', 'power', 'date'])
+    print(l)
+    context = {'categories': categories, 'data': data, 'l' : l}
 
     return render(request, 'index.html', context)
 
@@ -51,9 +53,9 @@ def compute(request):
     d={}
     l=[]
     p=0
-    for graph in GraphsCategory.objects.all():
-        graphsdatas=GraphsData.objects.filter(json_data__contains=f'"{int(graph.id)}":').order_by('id')
-        if graphsdatas:
+    graph = GraphsCategory.objects.get(pk=int(cat))
+    graphsdatas=GraphsData.objects.filter(json_data__contains=f'"{int(graph.id)}":').order_by('id')
+    if graphsdatas:
             initial_date = graphsdatas[0]
             p= graphsdatas[0].data.get(graph.id,0)
             d = {graph.name:graph.id, "date":initial_date, "power":""}
@@ -68,14 +70,9 @@ def compute(request):
                     initial_date = graphsdatas[data]
                     d={graph.name: graph.id, "date": graphsdatas[data].dt, "power": 0}
 
-    logging.warning(f"cfdfdfdf {l} ")
-    li = []
-    list=[]
-    categories = [{graph.name:graph.id} for graph in GraphsCategory.objects.all()]
-    logging.warning(f"cfdfdfdf {categories} ")
+    l.insert(0,['name', 'power', 'date'])
+    print(l)
+    categories = GraphsCategory.objects.all()
+    context = {'categories': categories, 'data': data, 'l' : l}
 
-    for graph in graphsdatas:
-        list.append(graph.get_power_and_data(cat))
-    logging.warning(f"cfdfdfdf {list} ")
-
-    return JsonResponse({"o": list})
+    return JsonResponse({"o": l})

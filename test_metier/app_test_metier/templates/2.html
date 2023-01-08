@@ -63,11 +63,12 @@
 	</div>
 	<script>
 
-function get_data(e) {
-	var v = e
-	console.log(e);
+function get_data(selectObject) {
+var obj
+	var v = selectObject.value
+	console.log(selectObject.value);
     let formData = new FormData();
-    formData.append('cat',  e);
+    formData.append('cat',  selectObject.value);
 	const request = new Request('{% url "compute" %}', {method: 'POST', body: formData});
 	fetch(request)
 	  .then((response) => response.json())
@@ -76,6 +77,7 @@ function get_data(e) {
         return data["o"];
     })
 }
+
 
 
 

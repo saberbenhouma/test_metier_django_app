@@ -36,7 +36,8 @@
 <div class="row" >
 	<div class ="col-md-6">
 		<p><b> Courbes de consommation</b>
-				<select name="categories" class="form-control"  onchange="get_data(this)">
+				<select id = "my-cat" name="categories" class="form-control"  onchange="onChange(this)" >
+					<option id="v100" value="100" selected="selected" > all </option>
 					{% for categories in categories %}
 					<option id="v{{categories.id}}" value="{{categories.id}}"> {{categories.name}}</option>
 					{% endfor %}
@@ -63,6 +64,7 @@
 	</div>
 	<script>
 
+
 function get_data(e) {
 	var v = e
 	console.log(e);
@@ -71,9 +73,9 @@ function get_data(e) {
 	const request = new Request('{% url "compute" %}', {method: 'POST', body: formData});
 	fetch(request)
 	  .then((response) => response.json())
-	  .then((data) => document.getElementById('demo').innerHTML=data["o"])
-	  .then(data => {
-        return data["o"];
+	  .then((zz) => document.getElementById('demo').innerHTML=zz["o"])
+      .then(dataa => {
+        return dataa["o"];
     })
 }
 
@@ -82,6 +84,15 @@ function get_data(e) {
 
 
 
+function onChange(e) {
+var zz = []
+option && myChart.setOption(option);
+if (e.value == "100") {
+  zz = {{l|safe}} ;
+} else  {
+   zz =  {{l|safe}};
+   }
+console.log(e.value)
 var chartDom = document.getElementById('main');
 var myChart = echarts.init(chartDom);
 var option;
@@ -90,7 +101,8 @@ option = {
   tooltip: {},
   dataset: {
     // Provide a set of data.
-    source: {{l|safe}}
+
+    source: zz
   },
   // Declare an x-axis (category axis).
   // The category map the first column in the dataset by default.
@@ -114,8 +126,8 @@ option = {
 };
 
 
-option && myChart.setOption(option);
 
+}
 
 </script>
 </body>
